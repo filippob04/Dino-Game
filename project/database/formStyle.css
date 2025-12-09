@@ -1,0 +1,139 @@
+/* =========================================
+   STILI SPECIFICI PER I FORM (Login/Register)
+   ========================================= */
+
+/* --- CONTAINER SCHEDA (Pixel Art Style) --- */
+.login-container {
+  width: 100%;
+  max-width: 500px;
+  background-color: #ffffff;
+  border: 4px solid #535353;
+  padding: 40px;
+}
+
+/* --- STRUTTURA FORM --- */
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 0.7rem;
+  margin-bottom: 10px;
+  display: block;
+  text-transform: uppercase;
+}
+
+/* --- CAMPI DI INPUT (Text, Email, Password) --- */
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 15px;
+  margin-bottom: 1px;
+
+  background-color: #f7f7f7;
+  border: 2px solid #535353;
+  color: #535353;
+
+  font-family: "Press Start 2P", cursive;
+  font-size: 0.8rem;
+  border-radius: 0;
+  outline: none;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus {
+  background-color: #ffffff;
+  border-color: #000000;
+}
+
+/* --- BOTTONE DI INVIO (Primary Action) --- */
+input[type="submit"] {
+  font-family: "Press Start 2P", cursive;
+  font-size: 1rem;
+  text-transform: uppercase;
+  cursor: pointer;
+
+  background-color: transparent;
+  color: #535353;
+  border: 4px solid #535353;
+  padding: 15px;
+  margin-top: 10px;
+
+  transition: all 0.1s step-start;
+}
+
+input[type="submit"]:hover {
+  background-color: #535353;
+  color: #f7f7f7;
+  transform: scale(1.02);
+}
+
+/* --- LINK SECONDARIO (Btn Play Style) --- */
+a.btn-play {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+
+  margin-top: 0px;
+  padding: 15px;
+
+  font-size: 0.7rem;
+  color: #535353;
+
+  background-color: transparent;
+  border: 2px solid #535353;
+
+  transition: all 0.1s step-start;
+}
+
+a.btn-play:hover {
+  background-color: #535353;
+  color: #ffffff;
+}
+
+a.btn-play:focus {
+  outline: 2px dashed #000;
+  outline-offset: 4px;
+}
+
+/* --- MESSAGGI DI SISTEMA (Feedback) --- */
+.message {
+  font-size: 0.6rem;
+  padding: 10px;
+  border: 2px solid #535353;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.message.error {
+  color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.message.success {
+  color: #388e3c;
+  border-color: #388e3c;
+}
+
+/* --- UTILITÀ LAYOUT FORM --- */
+.divider {
+  border: 0;
+  border-top: 4px dashed #535353;
+  margin: 20px 0;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.btn-small {
+  flex: 1;
+  font-size: 0.6rem;
+  margin-top: 0;
+}
