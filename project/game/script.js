@@ -132,7 +132,7 @@ function jump() {
 // funzione per il punteggio
 function updateScore(points) {
   score += points;
-  scoreElement.innerHTML = "Score: " + score;
+  scoreElement.innerHTML = "Punteggio: " + score;
 
   if (score > 0 && score % 100 === 0) {
     // ogni 100 pt aggiungo una animazione per il punteggio

@@ -1,36 +1,36 @@
 <?php
-// Credenziali per SELECT (minimo privilegio)
-$host = "localhost";
-$user = "viewer";
-$pass = "viewerPassword";
-$db   = "saw_project";
+    // Credenziali per SELECT (minimo privilegio)
+    $host = "localhost";
+    $user = "viewer";
+    $pass = "viewerPassword";
+    $db   = "saw_project";
 
-$data = []; // Array dati
+    $data = []; // Array dati
 
-try { // Connessione al DB
-    $conn = new mysqli($host, $user, $pass, $db);
-    
-    if ($conn->connect_error) {
-        throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
+    try { // Connessione al DB
+        $conn = new mysqli($host, $user, $pass, $db);
+        
+        if ($conn->connect_error) {
+            throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
+        }
+
+        // Query
+        $sql = "SELECT u.username, s.hs
+                FROM user u
+                JOIN stats s ON u.id = s.user_id
+                ORDER BY s.hs DESC
+                LIMIT 10";
+        $result = $conn->query($sql);
+
+        if ($result) {$data = $result->fetch_all(MYSQLI_ASSOC);} // fetch_all estrae tutti i dati della query
+        
+        $conn->close();
+
+    } catch (mysqli_sql_exception $e) {
+            error_log("DB Error: " . $e->getMessage());
+    } catch (Exception $e) {
+            error_log("Generic Error:", $e->getMessage());
     }
-
-    // Query
-    $sql = "SELECT u.username, s.hs
-            FROM user u
-            JOIN stats s ON u.id = s.user_id
-            ORDER BY s.hs DESC
-            LIMIT 10";
-    $result = $conn->query($sql);
-
-    if ($result) {$data = $result->fetch_all(MYSQLI_ASSOC);} // fetch_all estrae tutti i dati della query
-    
-    $conn->close();
-
-} catch (mysqli_sql_exception $e) {
-        error_log("DB Error: " . $e->getMessage());
-} catch (Exception $e) {
-        error_log("Generic Error:", $e->getMessage());
-}
 ?>
 
 <!DOCTYPE html>
@@ -140,13 +140,13 @@ try { // Connessione al DB
             placeholder: "NO DATA",
             columns: [
                 {
-                    title: "PLAYER",
+                    title: "Giocatore",
                     field: "username",
                     headerSort: false,
                     formatter: "textarea"
                 },
                 {
-                    title: "SCORE",
+                    title: "Punteggio",
                     field: "hs",
                     hozAlign: "right",
                     headerSort: false,
