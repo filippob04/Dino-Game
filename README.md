@@ -49,15 +49,13 @@ Un'applicazione web completa che combina un **Browser Game in stile Pixel Art** 
 PROJECT/
 ├── database/                   # Script PHP per la logica backend
 │   ├── img/avatars/            # Asset grafici per i profili
+│   ├── style/                  # .css Stili
 │   ├── loginForm.php           # Gestione Login
-│   ├── formStyle.css           # Stili per i form
 │   ├── registrationForm.php    # Gestione Registrazione
 │   ├── logout.php              # Gestione Logout
-│   ├── profileStyle.css        # Stili per il profilo utente
 │   ├── userProfile.php         # Dashboard Utente
 │   ├── editProfile.php         # Modifica Dati Utente
 │   ├── deleteAccount.php       # Eliminazione Dati Utente
-│   ├── style.css               # Stili base e layout
 │   └── saveGame.php            # Logica salvataggio punteggi
 ├── game/                       # Il Gioco JS
 │   ├── assets/                 # Cartella Immagini/Audio

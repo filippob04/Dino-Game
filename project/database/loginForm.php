@@ -111,8 +111,8 @@
   <head>
     <meta charset="UTF-8" />
     <title>Form Login</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="formStyle.css" />
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/formStyle.css" />
   </head>
   <body>
 

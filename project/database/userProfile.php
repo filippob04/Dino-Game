@@ -102,8 +102,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Profilo Utente - <?php echo htmlspecialchars($_SESSION['username']); ?></title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="profileStyle.css">
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/profileStyle.css">
 </head>
 <body>
     <div class="login-container profile-container">

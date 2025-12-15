@@ -9,13 +9,12 @@
     $message = "";
     $messageType = "";
 
-    // credenziali db
-    $db_username = "player";
-    $db_password = "userPassword";
-    $serverName = "localhost";
-    $dbName = "saw_project";
-
     if($_SERVER["REQUEST_METHOD"] == "POST"){
+        // credenziali db
+        $db_username = "player";
+        $db_password = "userPassword";
+        $serverName = "localhost";
+        $dbName = "saw_project";
         $userPassword = $_POST['verify_password'] ?? '';
         try{
             $conn = new mysqli($serverName, $db_username, $db_password, $dbName);
@@ -82,8 +81,8 @@
   <head>
     <meta charset="UTF-8" />
     <title>Elimina Profilo</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="formStyle.css" />
+    <link rel="stylesheet" href="style/style.css">
+    <link rel="stylesheet" href="style/formStyle.css" />
   </head>
   <body>
     <?php if (!empty($message)): ?>
