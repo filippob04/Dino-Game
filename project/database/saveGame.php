@@ -7,7 +7,14 @@
     $serverName = "localhost";
     $dbName = "saw_project";
 
-    $currentScore = isset($_GET['score']) ? intval($_GET['score']) : 0; // ottengo il punteggio dall'header
+    $currentScore = 0;
+    $message = "";
+    if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['score'])) {
+        $currentScore = intval($_POST['score']);
+        $_SESSION['pending_score'] = $currentScore;
+    } elseif (isset($_SESSION['pending_score'])) {
+        $currentScore = $_SESSION['pending_score'];
+    }
 
     if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']) { // se sono gia' loggato vado direttamente al profilo
 
@@ -28,6 +35,7 @@
             $query->close();
             $conn->close();
 
+            unset($_SESSION['pending_score']);
             header("Location: userProfile.php");
             exit();
         } catch (mysqli_sql_exception $e) {
@@ -48,6 +56,12 @@
 <body>
     <div class="login-container" style="text-align: center;">
         <h2>GAME OVER!</h2>
+
+        <?php if (!empty($message)): ?>
+            <div style="background-color: #ffebee; color: #c62828; padding: 10px; border: 1px solid #ef9a9a; margin-bottom: 15px; font-size: 0.8rem;">
+                ⚠️ <?php echo $message; ?>
+            </div>
+        <?php endif; ?>
         
         <p style="margin-bottom: 20px;">
             Hai totalizzato <strong><?php echo $currentScore; ?></strong> punti.
@@ -55,11 +69,11 @@
 
         <p style="font-size: 0.7rem; margin-bottom: 20px;">Vuoi salvare il punteggio?</p>
 
-        <a href="registrationForm.php?score=<?php echo $currentScore; ?>" class="btn-play">
+        <a href="registrationForm.php" class="btn-play">
             REGISTRATI E SALVA
         </a>
 
-        <a href="loginForm.php?score=<?php echo $currentScore; ?>" class="btn-play" style="margin-top: 10px;">
+        <a href="loginForm.php" class="btn-play" style="margin-top: 10px;">
             HAI GIÀ UN ACCOUNT? LOGIN
         </a>
 

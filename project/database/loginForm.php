@@ -13,10 +13,8 @@
     $password_plain = "";
 
     $pendingScore = 0;
-    if (isset($_POST['pending_score'])) { // invio anche score tramite un campo nascosto del form in caso di ricarica della pagina
-        $pendingScore = intval($_POST['pending_score']);
-    } elseif (isset($_GET['score'])) { // score salvato nell'header
-        $pendingScore = intval($_GET['score']);
+    if (isset($_SESSION['pending_score'])) { // punteggio in variabile di sessione
+        $pendingScore = intval($_SESSION['pending_score']);
     }
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){ // se ho ricevuto una richiesta di post (invio del form)
@@ -81,6 +79,7 @@
                         $query->close();
                         $conn->close();
 
+                        unset($_SESSION['pending_score']);
                         header("Location: userProfile.php"); // vado al profilo
                         exit();
 
@@ -127,8 +126,6 @@
       <h2>Form</h2>
         <form method="POST" action="">
             <h2>Login Utente</h2>
-            <input type="hidden" name="pending_score" value="<?php echo $pendingScore; ?>"> <!--Score Nascosto-->
-
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required value="<?php echo htmlspecialchars($username); ?>"><br><br>
 
@@ -138,7 +135,7 @@
             <input type="submit" name="login" value="Login">
         </form>
 
-        <a href="../database/registrationForm.php?score=<?php echo $pendingScore; ?>" class="btn-play">NON SEI REGISTRATO?</a>
+        <a href="../database/registrationForm.php" class="btn-play">NON SEI REGISTRATO?</a>
     </div>
     <a href="../home/homepage.html" class="btn-play" style="border-color: #d32f2f; color: #d32f2f; margin-top: 30px;">
             TORNA ALLA HOME

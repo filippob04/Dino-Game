@@ -10,10 +10,8 @@
     $email = "";
 
     $pendingScore = 0;
-    if (isset($_POST['pending_score'])) { // invio anche score tramite un campo nascosto del form in caso di ricarica della pagina
-        $pendingScore = intval($_POST['pending_score']);
-    } elseif (isset($_GET['score'])) { // score salvato nell'header
-        $pendingScore = intval($_GET['score']);
+    if (isset($_SESSION['pending_score'])) { // punteggio in variabile di sessione
+        $pendingScore = intval($_SESSION['pending_score']);
     }
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){ // Se ho inviato una richiesta di post (invio del form)
@@ -51,9 +49,8 @@
 
         // Se non ho ricevuto errori (message e' vuoto)
         if(empty($message)) {
-            $securePassword = password_hash($password_plain, PASSWORD_DEFAULT); // hash della password
             try {
-
+                $securePassword = password_hash($password_plain, PASSWORD_DEFAULT); // hash della password
                 // connessione al db
                 $conn = new mysqli($serverName, $db_username, $db_password, $dbName);
                 if($conn->connect_error){
@@ -77,24 +74,21 @@
                 $query->close();
 
                 // query per tabella stats
-                $sqlStats = "INSERT INTO stats (user_id, bio) VALUES (?, '')";
-                $queryStats = $conn->prepare($sqlStats);
-                $queryStats->bind_param("i", $newUserId);
+                if ($pendingScore > 0) {
+                    $sqlStats = "INSERT INTO stats (user_id, pt, hs, gamesPlayed, bio) VALUES (?, ?, ?, 1, '')";
+                    $queryStats = $conn->prepare($sqlStats);
+                    $queryStats->bind_param("iii", $newUserId, $pendingScore, $pendingScore);
+                } else {
+                    // Utente normale senza punteggio in sospeso
+                    $sqlStats = "INSERT INTO stats (user_id, pt, hs, gamesPlayed, bio) VALUES (?, 0, 0, 0, '')";
+                    $queryStats = $conn->prepare($sqlStats);
+                    $queryStats->bind_param("i", $newUserId);
+                }
+
                 if (!$queryStats->execute()) {
                     throw new mysqli_sql_exception($queryStats->error, $queryStats->errno);
                 }
                 $queryStats->close();
-
-                if ($pendingScore > 0) { // Aggiorniamo la riga appena creata con i punti della partita
-                    $sqlScore = "UPDATE stats SET pt = ?, hs = ?, gamesPlayed = gamesPlayed + 1 WHERE user_id = ?";
-                    $queryScore = $conn->prepare($sqlScore);
-                    $queryScore->bind_param("iii", $pendingScore, $pendingScore, $newUserId);
-
-                    if (!$queryScore->execute()) {
-                        throw new mysqli_sql_exception($queryScore->error, $queryScore->errno);
-                    }
-                    $queryScore->close();
-                }
 
                 $conn->commit(); // Commit
 
@@ -104,6 +98,7 @@
                 $_SESSION['username'] = $username;
                 $_SESSION['logged_in'] = true;
 
+                unset($_SESSION['pending_score']);
                 header("Location: userProfile.php"); // vado al profilo
                 exit();
             } catch (mysqli_sql_exception $e) {
@@ -152,8 +147,6 @@
       <h2>Form</h2>
         <form method="POST" action="">
             <h2>Registrazione Nuovo Utente</h2>
-            <input type="hidden" name="pending_score" value="<?php echo $pendingScore; ?>"> <!--Score Nascosto-->
-
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" required value="<?php echo htmlspecialchars($username); ?>"><br><br>
 
@@ -175,7 +168,7 @@
 
             <input type="submit" name="register" value="Registrati">
         </form>
-        <a href="../database/loginForm.php?score=<?php echo $pendingScore; ?>" class="btn-play">EFFETTUA IL LOGIN</a>
+        <a href="../database/loginForm.php" class="btn-play">EFFETTUA IL LOGIN</a>
     </div>
     <a href="../home/homepage.html" class="btn-play" style="border-color: #d32f2f; color: #d32f2f; margin-top: 30px;">
             TORNA ALLA HOME

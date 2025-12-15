@@ -262,6 +262,23 @@ function generatePterodactyl() {
   }, 20);
 }
 
+// Nascondo il punteggio in un form invisibile all'utente POST
+function sendScoreToDatabase(scoreValue) {
+  const form = document.createElement("form");
+  form.method = "POST";
+  form.action = "../database/saveGame.php";
+
+  const inputScore = document.createElement("input");
+  inputScore.type = "hidden";
+  inputScore.name = "score";
+  inputScore.value = scoreValue;
+
+  form.appendChild(inputScore);
+  document.body.appendChild(form);
+
+  form.submit();
+}
+
 // --- GAME OVER ---
 function gameOver() {
   isGameOver = true;
@@ -269,13 +286,13 @@ function gameOver() {
     deathSound.currentTime = 0;
     deathSound.play();
   }
-  dino.style.backgroundImage = "url('assets/img/dino_dead.png')"; // png dino morto
+  dino.style.backgroundImage = "url('assets/img/dino_dead.png')";
   clearInterval(runAnimationId);
 
   finalScoreSpan.innerText = score;
   gameOverMsg.style.display = "block";
 
   setTimeout(function () {
-    globalThis.location.href = "../database/saveGame.php?score=" + score; // memorizzo lo score nell'header, lo recupero con GET
+    sendScoreToDatabase(score);
   }, 3000);
 }
