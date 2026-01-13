@@ -21,7 +21,12 @@
                 LIMIT 10";
         $result = $conn->query($sql);
 
-        if ($result) {$data = $result->fetch_all(MYSQLI_ASSOC);} // fetch_all estrae tutti i dati della query
+        if($result) {
+            while ($row = $result->fetch_assoc()) {
+                $row['username'] = htmlspecialchars($row['username']); // Aggiungo questo controllo per sanificare username
+                $data[] = $row;
+            }
+        }
         
         $conn->close();
 
