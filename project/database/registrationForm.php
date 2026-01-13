@@ -1,5 +1,6 @@
 <?php
     session_start(); // Gestisco la sessione
+    require_once '../../util/config.php'; // Carica le costanti
     
     $message = "";
     $messageType = "";
@@ -15,12 +16,6 @@
     }
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){ // Se ho inviato una richiesta di post (invio del form)
-        // Credenziali DB
-        $db_username = "player";
-        $db_password = "userPassword";
-        $serverName = "localhost";
-        $dbName = "saw_project";
-
         // Ottengo i valori del form
         $username = ($_POST['username']) ?? '';
         $firstName = ($_POST['firstName']) ?? '';
@@ -52,7 +47,7 @@
             try {
                 $securePassword = password_hash($password_plain, PASSWORD_DEFAULT); // hash della password
                 // connessione al db
-                $conn = new mysqli($serverName, $db_username, $db_password, $dbName);
+                $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
                 if($conn->connect_error){
                     throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
                 }

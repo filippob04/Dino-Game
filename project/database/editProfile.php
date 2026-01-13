@@ -1,5 +1,6 @@
 <?php
     session_start(); // inizio sessione
+    require_once '../../util/config.php'; // Carica le costanti
 
     if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) { // Se non sono loggato torno al form di login
         header("Location: loginForm.php");
@@ -13,15 +14,9 @@
     $firstName = "";
     $lastName = "";
     $email = "";
-    
-    // credenziali db
-    $db_username = "player";
-    $db_password = "userPassword";
-    $serverName = "localhost";
-    $dbName = "saw_project";
 
     try {
-        $conn = new mysqli($serverName, $db_username, $db_password, $dbName);
+        $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         if($conn->connect_error){
             throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
         }

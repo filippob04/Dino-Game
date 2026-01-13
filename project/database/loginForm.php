@@ -1,5 +1,6 @@
 <?php
     session_start(); // Gestisco la sessione
+    require_once '../../util/config.php'; // Carica le costanti
 
     if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']) { // se sono gia' loggato vado direttamente al profilo
         header("Location: userProfile.php");
@@ -18,11 +19,6 @@
     }
 
     if($_SERVER["REQUEST_METHOD"] == "POST"){ // se ho ricevuto una richiesta di post (invio del form)
-        // credenziali DB
-        $db_username = "player";
-        $db_password = "userPassword";
-        $serverName = "localhost";
-        $dbName = "saw_project";
 
         // Credenziali del form
         $username = ($_POST['username']) ?? '';
@@ -38,7 +34,7 @@
         if(empty($message)) {
             try {
                 // tento di connetermi al server
-                $conn = new mysqli($serverName, $db_username, $db_password, $dbName);
+                $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
                 if($conn->connect_error){
                     throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
                 }

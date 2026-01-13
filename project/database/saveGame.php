@@ -1,11 +1,6 @@
 <?php
     session_start(); // Gestisco la sessione
-    
-    // Configurazione Database
-    $db_username = "player";
-    $db_password = "userPassword";
-    $serverName = "localhost";
-    $dbName = "saw_project";
+    require_once '../../util/config.php'; // Carica le costanti
 
     $currentScore = 0;
     $message = "";
@@ -20,7 +15,7 @@
 
         try {
             // mi connetto al db
-            $conn = new mysqli($serverName, $db_username, $db_password, $dbName);
+            $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
             if ($conn->connect_error) {
                 throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
             }
@@ -59,7 +54,7 @@
 
         <?php if (!empty($message)): ?>
             <div style="background-color: #ffebee; color: #c62828; padding: 10px; border: 1px solid #ef9a9a; margin-bottom: 15px; font-size: 0.8rem;">
-                ⚠️ <?php echo $message; ?>
+                <?php echo $message; ?>
             </div>
         <?php endif; ?>
         

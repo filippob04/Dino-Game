@@ -1,14 +1,13 @@
 <?php
+    require_once '../../util/config.php'; // Carica le costanti
     // Credenziali per SELECT (minimo privilegio)
-    $host = "localhost";
     $user = "viewer";
     $pass = "viewerPassword";
-    $db   = "saw_project";
 
     $data = []; // Array dati
 
     try { // Connessione al DB
-        $conn = new mysqli($host, $user, $pass, $db);
+        $conn = new mysqli(DB_HOST, $user, $pass, DB_NAME);
         
         if ($conn->connect_error) {
             throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
