@@ -70,7 +70,7 @@ PROJECT/
 │   ├── rules.html              # Elenco Regole
 │   └── leaderboard.php         # Classifica globale
 └── util/                       # Risorse extra
-    └── query.sql               # Script per creare il DB
+    └── config.php, query.sql   # Credenziali e creazione DB
 ```
 
 **Avvia il Server:**
