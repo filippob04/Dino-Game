@@ -131,7 +131,7 @@ footer {
   font-family: inherit;
 }
 
-.rules-box ol {
+.rules-box ul {
   list-style-type: none;
   padding: 0;
   margin: 0;

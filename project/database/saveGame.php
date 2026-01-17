@@ -2,6 +2,12 @@
     session_start(); // Gestisco la sessione
     require_once '../../util/config.php'; // Carica le costanti
 
+    if (isset($_GET['action']) && $_GET['action'] === 'cancel') {
+        unset($_SESSION['pending_score']); // Rimuovo il punteggio in sospeso
+        header("Location: ../home/homepage.html"); // Reindirizzo alla home
+        exit();
+    }
+
     $currentScore = 0;
     $message = "";
     if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['score'])) {
@@ -9,6 +15,9 @@
         $_SESSION['pending_score'] = $currentScore;
     } elseif (isset($_SESSION['pending_score'])) {
         $currentScore = $_SESSION['pending_score'];
+    }  else {
+        header("Location: ../home/homepage.html"); // Reindirizzo alla home
+        exit();
     }
 
     if (isset($_SESSION['logged_in']) && $_SESSION['logged_in']) { // se sono gia' loggato vado direttamente al profilo
@@ -72,7 +81,7 @@
             HAI GIÀ UN ACCOUNT? LOGIN
         </a>
 
-        <a href="../home/homepage.html" class="btn-play" style="border-color: #d32f2f; color: #d32f2f; margin-top: 30px;">
+        <a href="?action=cancel" class="btn-play" style="border-color: #d32f2f; color: #d32f2f; margin-top: 30px;">
             TORNA ALLA HOME
         </a>
     </div>
