@@ -74,7 +74,7 @@
                 $queryCheckPwd->close();
 
                 // verifico la password inserita con quella attuale
-                if (!$rowCheckPwd || !password_verify($currentPassword, $rowCheckPwd['securePassword'])) {
+                if (!password_verify($currentPassword, $rowCheckPwd['securePassword'])) {
                     $message = "La password attuale inserita non è corretta. Modifiche annullate.";
                     $messageType = "error";
                 } else {
