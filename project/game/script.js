@@ -6,11 +6,17 @@ const gameOverMsg = document.getElementById("game-over-msg");
 const finalScoreSpan = document.getElementById("final-score");
 const muteBtn = document.getElementById("mute-btn");
 
-let score = 0; // variabile per memorizzare il punteggio
+/* variabili per punteggio e meccaniche gioco */
+let score = 0;
 let isGameStarted = false;
 let isGameOver = false;
 
-// gestione audio
+/* gestione animazioni */
+let isRightFoot = true;
+let runAnimationId;
+let isDucking = false;
+
+/* gestione asset audiovisivi */
 let isMuted = true;
 const jumpSound = new Audio("assets/audio/jump.mp3");
 const deathSound = new Audio("assets/audio/die.mp3");
@@ -22,11 +28,6 @@ pointSound.preload = "auto";
 jumpSound.load();
 deathSound.load();
 pointSound.load();
-
-// gestione animazioni
-let isRightFoot = true;
-let runAnimationId;
-let isDucking = false;
 
 function preloadImages() {
   const images = [
@@ -45,6 +46,7 @@ function preloadImages() {
 }
 preloadImages();
 
+/* Interazioni con la tastiera */
 // eventlistener dello spazio per chiamare spawnObstacle
 document.addEventListener("keydown", function (event) {
   if (isGameOver) return;
@@ -70,7 +72,6 @@ document.addEventListener("keydown", function (event) {
     }
   }
 });
-
 document.addEventListener("keyup", function (event) {
   if (isGameOver) return;
   if (event.code === "ControlLeft") {
@@ -92,6 +93,7 @@ muteBtn.addEventListener("click", function () {
   this.blur();
 });
 
+/* Funzioni */
 function animateRunning() {
   if (isGameOver) return;
 
@@ -115,7 +117,6 @@ function animateRunning() {
 }
 runAnimationId = setInterval(animateRunning, 100); // ogni 100ms
 
-// funzione per il salto
 function jump() {
   if (!dino.classList.contains("animate-jump")) {
     dino.classList.add("animate-jump");
@@ -157,15 +158,15 @@ function spawnObstacle() {
   }
 
   // aumento la difficolta' man mano che si va avanti
-  let difficultyFactor = Math.min(score * 2, 800);
-  let minTime = 1000 - difficultyFactor * 0.5;
-  if (minTime < 600) minTime = 600;
+  let difficultyFactor = Math.min(score * 2, 800); // La difficolta' massima si raggiunge quando il punteggio e' 800
+  let minTime = 1000 - difficultyFactor * 0.5; // Calcolo il tempo di spawn fra un ostacolo e l'altro
+  if (minTime < 600) minTime = 600; // Il tempo minimo di spawn e' 600
 
-  let variance = 1500 - difficultyFactor;
-  if (variance < 400) variance = 400;
+  let variance = 1500 - difficultyFactor; // La varianza e' il fattore che genera una casualita' fra lo spawn di ogni ostacolo
+  if (variance < 400) variance = 400; // Varianza minima 400
 
-  let randomTime = Math.random() * variance + minTime;
-  setTimeout(spawnObstacle, randomTime);
+  let randomTime = Math.random() * variance + minTime; // Tempo di spawn finale
+  setTimeout(spawnObstacle, randomTime); // Imposto quindi il tempo di attesa fra lo spawn di due ostacoli
 }
 
 // funzione per i cactus
@@ -176,19 +177,21 @@ function generateCactus() {
   let obstacleHeight = 0;
   let obstacleWidth = 0;
 
+  // Scelgo quale tipo di cactus generare
   if (Math.random() < 0.5) {
     cactus.classList.add("cactus-group");
 
-    obstacleWidth = 100;
-    obstacleHeight = 85;
+    obstacleWidth = 70;
+    obstacleHeight = 75;
   } else {
     cactus.classList.add("cactus-single");
 
-    obstacleWidth = 50;
-    obstacleHeight = 90;
+    obstacleWidth = 65;
+    obstacleHeight = 80;
   }
   gameContainer.appendChild(cactus);
 
+  // Calcolo la posizione del cactus
   let cactusPosition = 900;
   cactus.style.left = cactusPosition + "px";
   let currentSpeed = 10 + Math.floor(score / 100);
@@ -200,23 +203,25 @@ function generateCactus() {
       return;
     }
 
+    // Sposto il cactus verso il player
     cactusPosition -= currentSpeed;
     cactus.style.left = cactusPosition + "px";
 
+    // Verifico se l'ho colpito
     let dinoTop = Number.parseInt(
-      globalThis.getComputedStyle(dino).getPropertyValue("top")
+      globalThis.getComputedStyle(dino).getPropertyValue("top"),
     );
-    let collisionThreshold = 320 - obstacleHeight + 20;
-    let DIFF = 10; // fattore di difficolta'
+    let collisionThreshold = 320 - obstacleHeight; // 320 e' il livello del 'terreno' - Altezza del dinosauro, e' legato al .css
     if (
-      cactusPosition > DIFF &&
-      cactusPosition < obstacleWidth - DIFF &&
-      dinoTop >= collisionThreshold
+      cactusPosition > 0 && // Se non e' ancora superato
+      cactusPosition < obstacleWidth && // Se e' in una posizione di hit
+      dinoTop >= collisionThreshold // Se non ho saltato
     ) {
       gameOver();
       clearInterval(timerId);
     }
 
+    // Se supera la soglia lo despawno
     if (cactusPosition < -100) {
       clearInterval(timerId);
       if (gameContainer.contains(cactus)) cactus.remove();
@@ -232,7 +237,14 @@ function generatePterodactyl() {
 
   let pteroPosition = 850;
   ptero.style.left = pteroPosition + "px";
-  let currentSpeed = (10 + Math.floor(score / 100)) * 1.3;
+
+  // altezza randomica
+  let pteroHeights = [120, 35, 10]; // tre altezze possibili
+  let randomHeight =
+    pteroHeights[Math.floor(Math.random() * pteroHeights.length)]; // ne scelgo una a caso
+  ptero.style.bottom = randomHeight + "px";
+
+  let currentSpeed = (10 + Math.floor(score / 100)) * 1.5; // piu' veloce dei cactus
 
   let timerId = setInterval(function () {
     if (isGameOver) {
@@ -244,11 +256,29 @@ function generatePterodactyl() {
     ptero.style.left = pteroPosition + "px";
 
     let dinoTop = Number.parseInt(
-      globalThis.getComputedStyle(dino).getPropertyValue("top")
+      globalThis.getComputedStyle(dino).getPropertyValue("top"),
     );
 
+    let collision = false;
     if (pteroPosition > 0 && pteroPosition < 60) {
-      if (dinoTop >= 260 && !isDucking) {
+      switch (randomHeight) {
+        case 10: // Ptero Basso -> Devo saltare
+          if (dinoTop > 300) {
+            collision = true;
+          }
+          break;
+        case 35: // Ptero Medio -> Devo saltare o accovacciarmi
+          if (dinoTop < 330 && dinoTop > 260) {
+            collision = true;
+          }
+          break;
+        case 120: // Ptero Alto -> Non devo saltare
+          if (dinoTop < 250) {
+            collision = true;
+          }
+          break;
+      }
+      if (collision) {
         gameOver();
         clearInterval(timerId);
       }
@@ -260,6 +290,25 @@ function generatePterodactyl() {
       updateScore(20); // aumento il punteggio di 20 per ogni pterodattilo superato
     }
   }, 20);
+}
+
+// --- GAME OVER ---
+function gameOver() {
+  isGameOver = true;
+  if (!isMuted) {
+    deathSound.currentTime = 0;
+    deathSound.play();
+  }
+  dino.classList.remove("dino-ducking"); // se crouchato elimino la classe per evitare ridimensionamenti
+  dino.style.backgroundImage = "url('assets/img/dino_dead.png')";
+  clearInterval(runAnimationId);
+
+  finalScoreSpan.innerText = score;
+  gameOverMsg.style.display = "block";
+
+  setTimeout(function () {
+    sendScoreToDatabase(score);
+  }, 3000); // Aspetto 3 millisecondi
 }
 
 // Nascondo il punteggio in un form invisibile all'utente POST
@@ -277,22 +326,4 @@ function sendScoreToDatabase(scoreValue) {
   document.body.appendChild(form);
 
   form.submit();
-}
-
-// --- GAME OVER ---
-function gameOver() {
-  isGameOver = true;
-  if (!isMuted) {
-    deathSound.currentTime = 0;
-    deathSound.play();
-  }
-  dino.style.backgroundImage = "url('assets/img/dino_dead.png')";
-  clearInterval(runAnimationId);
-
-  finalScoreSpan.innerText = score;
-  gameOverMsg.style.display = "block";
-
-  setTimeout(function () {
-    sendScoreToDatabase(score);
-  }, 3000);
 }
