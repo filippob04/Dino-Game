@@ -8,8 +8,6 @@
     }
 
     $message = "";
-    $messageType = "";
-
     $username = "";
     $password_plain = "";
 
@@ -18,24 +16,23 @@
         $pendingScore = intval($_SESSION['pending_score']);
     }
 
-    if($_SERVER["REQUEST_METHOD"] == "POST"){ // se ho ricevuto una richiesta di post (invio del form)
+    if ($_SERVER["REQUEST_METHOD"] == "POST"){ // se ho ricevuto una richiesta di post (invio del form)
 
         // Credenziali del form
-        $username = ($_POST['username']) ?? '';
-        $password_plain = $_POST['password'] ?? '';
+        $username = trim($_POST['username']) ?? '';
+        $password_plain = trim($_POST['password']) ?? '';
 
         // check
         if (empty($username) || empty($password_plain)) {
             $message = "Attenzione: Tutti i campi devono essere compilati!";
-            $messageType = "error";
         }
 
         // se username e password sono stati inseriti, message sara' vuoto
-        if(empty($message)) {
+        if (empty($message)) {
             try {
                 // tento di connetermi al server
                 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-                if($conn->connect_error){
+                if ($conn->connect_error){
                     throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
                 }
                 $conn->set_charset("utf8mb4"); // Per gestire username con caratteri strani
@@ -43,12 +40,12 @@
                 // prepared statement
                 $sql = "SELECT id, username, securePassword FROM user WHERE username = ?";
                 $query = $conn->prepare($sql);
-                if(!$query){
+                if (!$query){
                     throw new mysqli_sql_exception("SQL Prepare Error: " . $conn->error);
                 }
                 $query->bind_param("s", $username);
                 // eseguo la query
-                if(!$query->execute()){
+                if (!$query->execute()){
                     throw new mysqli_sql_exception($query->error, $query->errno);
                 }
                 $result = $query->get_result();
@@ -74,29 +71,23 @@
 
                         $query->close();
                         $conn->close();
-
                         unset($_SESSION['pending_score']);
+
                         header("Location: userProfile.php"); // vado al profilo
                         exit();
-
                     } else { // Password Errata
                         $message = "Username o Password errati";
-                        $messageType = "error";
                     }
                 } else { // Username Errato
                     $message = "Username o Password errati";
-                    $messageType = "error";
                 }
             
-            $query->close();
-            $conn->close();
-
+                $query->close();
+                $conn->close();
             } catch (mysqli_sql_exception $e) {
                 $message = "Errore Database: " . $e->getMessage();
-                $messageType = "error";
             } catch (Exception $e) {
                 $message = "Errore generico: " . $e->getMessage();
-                $messageType = "error";
             }
         }
     }
@@ -111,12 +102,11 @@
     <link rel="stylesheet" href="style/formStyle.css" />
   </head>
   <body>
-
     <?php if (!empty($message)): ?>
-            <p class="message <?php echo $messageType; ?>">
-                <?php echo $message; ?>
-            </p>
-        <?php endif; ?>
+        <p class="message error">
+            <?php echo $message; ?>
+        </p>
+    <?php endif; ?>
 
     <div class="login-container">
       <h2>Form</h2>
@@ -133,8 +123,6 @@
 
         <a href="../database/registrationForm.php" class="btn-play">NON SEI REGISTRATO?</a>
     </div>
-    <a href="../home/homepage.html" class="btn-play" style="border-color: #d32f2f; color: #d32f2f; margin-top: 30px;">
-            TORNA ALLA HOME
-        </a>
+    <a href="../home/homepage.html" class="btn-play" style="border-color: #d32f2f; color: #d32f2f; margin-top: 30px;">TORNA ALLA HOME</a>
 </body>
 </html>

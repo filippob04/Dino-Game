@@ -8,10 +8,7 @@
     }
 
     // Inizializziamo le variabili
-    $firstName = $lastName = $email = $bio = $message = "";
-    
-    // Messaggio di stato per l'aggiornamento bio
-    $updateMessage = "";
+    $firstName = $lastName = $email = $bio = $message = $updateMessage = "";
 
     // Gestione Avatar
     $baseAvatarPath = "img/avatars/";
@@ -59,7 +56,7 @@
         WHERE u.id = ?";
         $query = $conn->prepare($sql);
         $query->bind_param("i", $_SESSION['id']);
-        if(!$query->execute()){
+        if (!$query->execute()){
             throw new mysqli_sql_exception($query->error, $query->errno);
         }
         $result = $query->get_result();
@@ -101,10 +98,14 @@
     <link rel="stylesheet" href="style/profileStyle.css">
 </head>
 <body>
+    <?php if (!empty($message)): ?>
+        <p class="message error">
+            <?php echo $message; ?>
+        </p>
+    <?php endif; ?>
+
     <div class="login-container profile-container">
-        
         <h2>PROFILO GIOCATORE</h2>
-        
         <div class="avatar-box">
             <img src="<?php echo htmlspecialchars($randomImgPath); ?>" alt="Avatar Casuale" class="pixel-avatar">
         </div>
@@ -142,10 +143,7 @@
             <form method="POST" action="">
                 <div class="bio-header">
                     <p class="label-left">BIOGRAFIA:</p>
-                    
-                    <button type="submit" name="save_bio" id="saveBioBtn" class="btn-save-hidden" title="Salva Modifiche">
-                        &#10004;
-                    </button>
+                    <button type="submit" name="save_bio" id="saveBioBtn" class="btn-save-hidden" title="Salva Modifiche">&#10004;</button>
                 </div>
 
                 <?php if (!empty($updateMessage)): ?>
@@ -180,9 +178,9 @@
             var originalText = textarea.getAttribute('data-original');
             var currentText = textarea.value;
 
-            if (originalText !== currentText) {
+            if(originalText !== currentText) {
                 btn.style.display = 'block';
-            } else {
+            }else {
                 btn.style.display = 'none';
             }
         }

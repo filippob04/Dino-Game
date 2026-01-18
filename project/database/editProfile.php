@@ -17,13 +17,13 @@
 
     try {
         $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-        if($conn->connect_error){
+        if ($conn->connect_error){
             throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
         }
         $conn->set_charset("utf8mb4"); // per gestire caratteri strani
 
         // Invio del form di update
-        if($_SERVER["REQUEST_METHOD"] == "POST"){
+        if ($_SERVER["REQUEST_METHOD"] == "POST"){
             
             $newUsername = $_POST['username'] ?? '';
             $newFirstName = $_POST['firstName'] ?? '';
@@ -56,16 +56,16 @@
             }
 
             // se non ho commesso errori
-            if(empty($message)) {
+            if (empty($message)) {
                 // Verifico la correttezza della password per il salvataggio
                 $sqlCheckPwd = "SELECT securePassword FROM user WHERE id = ?";
                 $queryCheckPwd = $conn->prepare($sqlCheckPwd);
                 $queryCheckPwd->bind_param("i", $_SESSION['id']);
-                if(!$queryCheckPwd->execute()){
+                if (!$queryCheckPwd->execute()){
                     throw new mysqli_sql_exception($queryCheckPwd->error, $queryCheckPwd->errno);
                 }
                 $checkPwd = $queryCheckPwd->get_result();
-                if(!$rowCheckPwd = $checkPwd->fetch_assoc()){
+                if (!$rowCheckPwd = $checkPwd->fetch_assoc()){
                     // Utente non trovato (rimosso dal db nel mentre)
                     session_destroy();
                     header("Location: loginForm.php");
@@ -82,14 +82,13 @@
                     if (!empty($newPasswordPlain)) {
                         $passwordToStore = password_hash($newPasswordPlain, PASSWORD_DEFAULT);
                     }
-
                     try {
                         $conn->begin_transaction(); // inizio la transazione per far si che in caso di errore le modifiche vengano ripristinate
 
                         $sqlUpdate = "UPDATE user SET username=?, firstName=?, lastName=?, email=?, securePassword=? WHERE id=?";
                         $queryUpdate = $conn->prepare($sqlUpdate);
                         $queryUpdate->bind_param("sssssi", $newUsername, $newFirstName, $newLastName, $newEmail, $passwordToStore, $_SESSION['id']);
-                        if($queryUpdate->execute()) {
+                        if ($queryUpdate->execute()) {
                             $conn->commit();
                             $message = "Profilo aggiornato con successo!";
                             $messageType = "success";
@@ -116,7 +115,7 @@
         $sqlSelect = "SELECT username, firstName, lastName, email FROM user WHERE id = ?";
         $querySelect = $conn->prepare($sqlSelect);
         $querySelect->bind_param("i", $_SESSION['id']);
-        if(!$querySelect->execute()){
+        if (!$querySelect->execute()){
             throw new mysqli_sql_exception($querySelect->error, $querySelect->errno);
         }
         $result = $querySelect->get_result();
@@ -152,13 +151,10 @@
     <link rel="stylesheet" href="style/formStyle.css" />
   </head>
   <body>
-
     <?php if (!empty($message)): ?>
-        <div class="login-container" style="margin-bottom: 20px; padding: 10px; border-color: <?php echo ($messageType == 'error') ? '#d32f2f' : '#388e3c'; ?>;">
-            <p class="message <?php echo $messageType; ?>">
-                <?php echo $message; ?>
-            </p>
-        </div>
+    <p class="message <?php echo $messageType; ?>">
+        <?php echo $message; ?>
+    </p>
     <?php endif; ?>
 
     <div class="login-container">

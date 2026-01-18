@@ -8,24 +8,23 @@
     }
 
     $message = "";
-    $messageType = "";
 
-    if($_SERVER["REQUEST_METHOD"] == "POST"){
+    if ($_SERVER["REQUEST_METHOD"] == "POST"){
         $userPassword = $_POST['verify_password'] ?? '';
-        try{
+        try {
             $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-            if($conn->connect_error){
+            if ($conn->connect_error){
                 throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
             }
 
             $sql = "SELECT securePassword FROM user WHERE id = ?";
             $query = $conn->prepare($sql);
             $query->bind_param("i", $_SESSION['id']);
-            if(!$query->execute()){
+            if (!$query->execute()){
                 throw new mysqli_sql_exception($query->error, $query->errno);
             }
             $res = $query->get_result();
-            if(!$row = $res->fetch_assoc()){
+            if (!$row = $res->fetch_assoc()){
                 // Utente non trovato (rimosso dal db nel mentre)
                 session_destroy();
                 header("Location: loginForm.php");
@@ -36,19 +35,18 @@
             // verifico la password inserita con quella attuale
             if (!$row || !password_verify($userPassword, $row['securePassword'])) {
                 $message = "La password attuale inserita non è corretta.";
-                $messageType = "error";
-            } else{
+            } else {
                 try {
                     $conn->begin_transaction(); // inizio la transazione per far si che in caso di errore le modifiche vengano ripristinate
 
                     $sqlDelete = "DELETE FROM user WHERE id=?";
                     $queryDelete = $conn->prepare($sqlDelete);
                     $queryDelete->bind_param("i", $_SESSION['id']);
-                    if($queryDelete->execute()) {
+                    if ($queryDelete->execute()) {
                         $conn->commit();
                         $message = "Account Eliminato";
-                        $messageType = "success";
-
+                        $conn->close();
+                        
                         $_SESSION = array(); // svuota i dati di sessione (array)
                         session_destroy();
 
@@ -62,13 +60,13 @@
                 } catch (mysqli_sql_exception $e) {
                     $conn->rollback(); // rollback
                     $message = "Errore Database: " . $e->getMessage();
-                    $messageType = "error";
                 }
             }
-            $conn->close();
+            if($conn) {
+                $conn->close();
+            }
         } catch (Exception $e) {
             $message = "Errore di sistema: " . $e->getMessage();
-            $messageType = "error";
         }
     }
 ?>
@@ -82,11 +80,9 @@
   </head>
   <body>
     <?php if (!empty($message)): ?>
-        <div class="login-container" style="margin-bottom: 20px; padding: 10px; border-color: <?php echo ($messageType == 'error') ? '#d32f2f' : '#388e3c'; ?>;">
-            <p class="message <?php echo $messageType; ?>">
-                <?php echo $message; ?>
-            </p>
-        </div>
+        <p class="message error">
+            <?php echo $message; ?>
+        </p>
     <?php endif; ?>
 
     <div class="login-container" style="border-color: #d32f2f;">

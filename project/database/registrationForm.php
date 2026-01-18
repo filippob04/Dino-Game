@@ -3,8 +3,6 @@
     require_once '../../util/config.php'; // Carica le costanti
     
     $message = "";
-    $messageType = "";
-
     $username = "";
     $firstName = "";
     $lastName = "";
@@ -15,40 +13,36 @@
         $pendingScore = intval($_SESSION['pending_score']);
     }
 
-    if($_SERVER["REQUEST_METHOD"] == "POST"){ // Se ho inviato una richiesta di post (invio del form)
+    if ($_SERVER["REQUEST_METHOD"] == "POST"){ // Se ho inviato una richiesta di post (invio del form)
         // Ottengo i valori del form
-        $username = ($_POST['username']) ?? '';
-        $firstName = ($_POST['firstName']) ?? '';
-        $lastName = ($_POST['lastName']) ?? '';
-        $email = ($_POST['email']) ?? '';
+        $username = trim($_POST['username'] ?? '');
+        $firstName = trim($_POST['firstName'] ?? '');
+        $lastName = trim($_POST['lastName'] ?? '');
+        $email = trim($_POST['email'] ?? '');
         $password_plain = $_POST['password'] ?? '';
         $password_confirm = $_POST['confirm_password'] ?? '';
 
         // Check
         if (empty($username) || empty($email) || empty($password_plain) || empty($password_confirm) || empty($firstName) || empty($lastName)) {
             $message = "Attenzione: Tutti i campi devono essere compilati!";
-            $messageType = "error";
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $message = "Attenzione: L'indirizzo Email fornito non è valido.";
             $email = "";
-            $messageType = "error";
         } elseif ($password_plain !== $password_confirm) {
             $message = "Attenzione: Le due password inserite non corrispondono.";
             $password_confirm = $password_plain = "";
-            $messageType = "error";
         } elseif (strlen($password_plain) < 8) {
             $message = "Attenzione: La Password deve aver un minimo di 8 caratteri";
             $password_confirm = $password_plain = "";
-            $messageType = "error";
         }
 
         // Se non ho ricevuto errori (message e' vuoto)
-        if(empty($message)) {
+        if (empty($message)) {
             try {
                 $securePassword = password_hash($password_plain, PASSWORD_DEFAULT); // hash della password
                 // connessione al db
                 $conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
-                if($conn->connect_error){
+                if ($conn->connect_error){
                     throw new mysqli_sql_exception($conn->connect_error, $conn->connect_errno);
                 }
                 $conn->set_charset("utf8mb4"); // Per gestire username con caratteri strani
@@ -57,7 +51,7 @@
                 // prepared statement
                 $sql = "INSERT INTO user (username, firstName, lastName, email, securePassword) VALUES (?, ?, ?, ?, ?)";
                 $query = $conn->prepare($sql);
-                if(!$query){
+                if (!$query){
                     throw new mysqli_sql_exception("SQL Prepare Error: " . $conn->error);
                 }
                 $query->bind_param("sssss", $username, $firstName, $lastName, $email, $securePassword);
@@ -93,30 +87,22 @@
                 $_SESSION['username'] = $username;
                 $_SESSION['logged_in'] = true;
 
+                $conn->close();
                 unset($_SESSION['pending_score']);
+
                 header("Location: userProfile.php"); // vado al profilo
                 exit();
             } catch (mysqli_sql_exception $e) {
                 $conn->rollback(); // rollback della transazione
-
                 if ($e->getCode() === 1062) { // 1062 e' il codice per dati duplicati
                     $message = "Attenzione: Username o Email già esistenti.";
-                    $messageType = "error";
                     $username = $email = "";
                 } else {
                     $message = "Errore Database: " . $e->getMessage();
-                    $messageType = "error";
                 }
-                $messageType = "error";
             } catch (Exception $e) {
                 $conn->rollback();
-
                 $message = "Errore generico: " . $e->getMessage();
-                $messageType = "error";
-            } finally { // chiudo la connessione
-                if (isset($conn)) {
-                    $conn->close();
-                }
             }
         }
     }
@@ -131,9 +117,8 @@
     <link rel="stylesheet" href="style/formStyle.css" />
   </head>
   <body>
-
     <?php if (!empty($message)): ?>
-        <p class="message <?php echo $messageType; ?>">
+        <p class="message error">
             <?php echo $message; ?>
         </p>
     <?php endif; ?>
@@ -165,8 +150,6 @@
         </form>
         <a href="../database/loginForm.php" class="btn-play">EFFETTUA IL LOGIN</a>
     </div>
-    <a href="../home/homepage.html" class="btn-play" style="border-color: #d32f2f; color: #d32f2f; margin-top: 30px;">
-            TORNA ALLA HOME
-        </a>
+    <a href="../home/homepage.html" class="btn-play" style="border-color: #d32f2f; color: #d32f2f; margin-top: 30px;">TORNA ALLA HOME</a>
 </body>
 </html>
