@@ -63,7 +63,7 @@
                 $query->close();
 
                 // query per tabella stats
-                if ($pendingScore > 0) {
+                if ($pendingScore >= 0) {
                     $sqlStats = "INSERT INTO stats (user_id, pt, hs, gamesPlayed, bio) VALUES (?, ?, ?, 1, '')";
                     $queryStats = $conn->prepare($sqlStats);
                     $queryStats->bind_param("iii", $newUserId, $pendingScore, $pendingScore);
