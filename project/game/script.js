@@ -10,6 +10,8 @@ const muteBtn = document.getElementById("mute-btn");
 let score = 0;
 let isGameStarted = false;
 let isGameOver = false;
+let dinoTop = 312; // Valore di default
+let gameLoopId;
 
 /* gestione animazioni */
 let isRightFoot = true;
@@ -55,6 +57,7 @@ document.addEventListener("keydown", function (event) {
 
     if (!isGameStarted) {
       isGameStarted = true;
+      startGameLoop();
       spawnObstacle();
     }
     jump();
@@ -94,6 +97,18 @@ muteBtn.addEventListener("click", function () {
 });
 
 /* Funzioni */
+function startGameLoop() {
+  gameLoopId = setInterval(() => {
+    if (isGameOver) {
+      clearInterval(gameLoopId);
+      return;
+    }
+    dinoTop = Number.parseInt(
+      globalThis.getComputedStyle(dino).getPropertyValue("top"),
+    );
+  }, 20); // Ogni 20ms
+}
+
 function animateRunning() {
   if (isGameOver) return;
 
@@ -208,9 +223,6 @@ function generateCactus() {
     cactus.style.left = cactusPosition + "px";
 
     // Verifico se l'ho colpito
-    let dinoTop = Number.parseInt(
-      globalThis.getComputedStyle(dino).getPropertyValue("top"),
-    );
     let collisionThreshold = 320 - obstacleHeight; // 320 e' il livello del 'terreno' - Altezza del dinosauro, e' legato al .css
     if (
       cactusPosition > 0 && // Se non e' ancora superato
@@ -228,6 +240,29 @@ function generateCactus() {
       updateScore(10); // aumento il punteggio di 10 per ogni cactus superato
     }
   }, 20); // ogni 20ms eseguo la funzione
+}
+
+function checkPCollision(p, h) {
+  if (p > 0 && p < 60) {
+    switch (h) {
+      case 10: // Ptero Basso -> Devo saltare
+        if (dinoTop > 300) {
+          return true;
+        }
+        break;
+      case 35: // Ptero Medio -> Devo saltare o accovacciarmi
+        if (dinoTop < 330 && dinoTop > 260) {
+          return true;
+        }
+        break;
+      case 120: // Ptero Alto -> Non devo saltare
+        if (dinoTop < 250) {
+          return true;
+        }
+        break;
+    }
+  }
+  return false;
 }
 
 function generatePterodactyl() {
@@ -255,35 +290,11 @@ function generatePterodactyl() {
     pteroPosition -= currentSpeed;
     ptero.style.left = pteroPosition + "px";
 
-    let dinoTop = Number.parseInt(
-      globalThis.getComputedStyle(dino).getPropertyValue("top"),
-    );
-
-    let collision = false;
-    if (pteroPosition > 0 && pteroPosition < 60) {
-      switch (randomHeight) {
-        case 10: // Ptero Basso -> Devo saltare
-          if (dinoTop > 300) {
-            collision = true;
-          }
-          break;
-        case 35: // Ptero Medio -> Devo saltare o accovacciarmi
-          if (dinoTop < 330 && dinoTop > 260) {
-            collision = true;
-          }
-          break;
-        case 120: // Ptero Alto -> Non devo saltare
-          if (dinoTop < 250) {
-            collision = true;
-          }
-          break;
-      }
-      if (collision) {
-        gameOver();
-        clearInterval(timerId);
-      }
+    let collision = checkPCollision(pteroPosition, randomHeight);
+    if (collision) {
+      gameOver();
+      clearInterval(timerId);
     }
-
     if (pteroPosition < -60) {
       clearInterval(timerId);
       if (gameContainer.contains(ptero)) ptero.remove();
