@@ -308,7 +308,7 @@ function gameOver() {
 
   setTimeout(function () {
     sendScoreToDatabase(score);
-  }, 3000); // Aspetto 3 millisecondi
+  }, 3000); // Aspetto 3 secondi
 }
 
 // Nascondo il punteggio in un form invisibile all'utente POST
