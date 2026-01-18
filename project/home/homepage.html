@@ -41,5 +41,35 @@
         GITHUB
       </a>
     </footer>
+
+    <!-- Cookie Banner -->
+    <div id="cookie-banner" class="cookie-banner hidden">
+      <div class="cookie-content">
+        <p>
+          <b>Cookies:</b><br />
+          Questo sito utilizza esclusivamente cookie tecnici necessari.
+        </p>
+        <button id="accept-cookie-btn" class="cookie-btn">Ho capito</button>
+      </div>
+    </div>
+
+    <script>
+      // Gestione del Cookie banner, memorizzo il consenso nel localstorage
+      document.addEventListener("DOMContentLoaded", function () {
+        const cookieBanner = document.getElementById("cookie-banner");
+        const acceptBtn = document.getElementById("accept-cookie-btn");
+
+        const KEY = "cookie_consent";
+        if (!localStorage.getItem(KEY)) {
+          setTimeout(() => {
+            cookieBanner.classList.remove("hidden");
+          }, 500);
+        }
+        acceptBtn.addEventListener("click", function () {
+          localStorage.setItem(KEY, "true");
+          cookieBanner.classList.add("hidden");
+        });
+      });
+    </script>
   </body>
 </html>
