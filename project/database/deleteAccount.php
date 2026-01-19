@@ -33,7 +33,7 @@
             $query->close();
 
             // verifico la password inserita con quella attuale
-            if (!$row || !password_verify($userPassword, $row['securePassword'])) {
+            if (!password_verify($userPassword, $row['securePassword'])) {
                 $message = "La password attuale inserita non è corretta.";
             } else {
                 try {
@@ -59,14 +59,16 @@
 
                 } catch (mysqli_sql_exception $e) {
                     $conn->rollback(); // rollback
-                    $message = "Errore Database: " . $e->getMessage();
+                    $message = "Si e' verificato un errore, riprova piu' tardi.";
+                    error_log("Errore Database: " . $e->getCode() . $e->getMessage());
                 }
             }
             if($conn) {
                 $conn->close();
             }
         } catch (Exception $e) {
-            $message = "Errore di sistema: " . $e->getMessage();
+            $message = "Si e' verificato un errore, riprova piu' tardi.";
+            error_log("Errore Generico: " . $e->getCode() . $e->getMessage());
         }
     }
 ?>

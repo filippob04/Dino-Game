@@ -104,7 +104,8 @@
                         if ($e->getCode() === 1062) {
                             $message = "Username o Email già in uso da un altro utente.";
                         } else {
-                            $message = "Errore SQL: " . $e->getMessage();
+                            $message = "Si e' verificato un errore, riprova piu' tardi.";
+                            error_log("Errore Database: " . $e->getCode() . $e->getMessage());
                         }
                         $messageType = "error";
                     }
@@ -134,10 +135,12 @@
         $conn->close();
 
     } catch (mysqli_sql_exception $e) {
-        $message = "Errore Database: " . $e->getMessage();
+        $message = "Si e' verificato un errore, riprova piu' tardi.";
+        error_log("Errore Database: " . $e->getCode() . $e->getMessage());
         $messageType = "error";
     } catch (Exception $e) {
-        $message = "Errore di sistema: " . $e->getMessage();
+        $message = "Si e' verificato un errore, riprova piu' tardi.";
+        error_log("Errore Database: " . $e->getCode() . $e->getMessage());
         $messageType = "error";
     }
 ?>

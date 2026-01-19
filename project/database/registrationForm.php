@@ -98,11 +98,13 @@
                     $message = "Attenzione: Username o Email già esistenti.";
                     $username = $email = "";
                 } else {
-                    $message = "Errore Database: " . $e->getMessage();
+                    $message = "Si e' verificato un errore, riprova piu' tardi.";
+                    error_log("Errore Database: " . $e->getCode() . $e->getMessage());
                 }
             } catch (Exception $e) {
                 $conn->rollback();
-                $message = "Errore generico: " . $e->getMessage();
+                $message = "Si e' verificato un errore, riprova piu' tardi.";
+                error_log("Errore Database: " . $e->getCode() . $e->getMessage());
             }
         }
     }

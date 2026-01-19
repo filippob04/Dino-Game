@@ -83,9 +83,11 @@
             $randomImgPath = $avatars[array_rand($avatars)];
         }
     } catch (mysqli_sql_exception $e) {
-        $message = "Errore Database: " . $e->getCode();
+        $message = "Si e' verificato un errore, riprova piu' tardi.";
+        error_log("Errore Database: " . $e->getCode() . $e->getMessage());
     } catch (Exception $e) {
-        $message = "Errore generico" . $e->getCode();
+        $message = "Si e' verificato un errore, riprova piu' tardi.";
+        error_log("Errore Generico: " . $e->getCode() . $e->getMessage());
     }
 ?>
 
