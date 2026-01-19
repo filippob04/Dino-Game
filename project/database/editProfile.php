@@ -53,6 +53,9 @@
             } elseif (!empty($newPasswordPlain) && strlen($newPasswordPlain) < 8) {
                 $message = "La nuova password deve avere almeno 8 caratteri.";
                 $messageType = "error";
+            } elseif (strlen($newUsername) > 21) {
+                $message = "Il nome utente puo' avere al piu' 21 caratteri.";
+                $messageType = "error";
             }
 
             // se non ho commesso errori

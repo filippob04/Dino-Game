@@ -34,6 +34,9 @@
         } elseif (strlen($password_plain) < 8) {
             $message = "Attenzione: La Password deve aver un minimo di 8 caratteri";
             $password_confirm = $password_plain = "";
+        } elseif (strlen($username) > 21) {
+            $message = "Il nome utente puo' avere al piu' 21 caratteri.";
+            $username = "";
         }
 
         // Se non ho ricevuto errori (message e' vuoto)
