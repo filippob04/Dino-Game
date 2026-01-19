@@ -14,10 +14,9 @@ Un'applicazione web completa che combina un **Browser Game in stile Pixel Art** 
 - **Difficoltà Progressiva:** La velocità e la frequenza degli ostacoli aumentano con il punteggio.
 - **Ostacoli Vari:**
   - 🌵 Cactus singoli e gruppi (dimensioni e hitbox variabili).
-  - 🦅 Pterodattili (richiedono il _ducking_).
+  - 🦅 Pterodattili (ad altezze diverse).
 - **Eventi Audio:** .mp3 recuperati dal gioco originale quando si (_salta_), (_perde_), (_accumulano punti_).
 - **Grafica Pixel Art:** Sprite animati per la corsa, salto e collisioni.
-- **Backup Locale:** Salvataggio temporaneo in `localStorage` per non perdere i progressi in caso di disconnessione.
 
 ### 🔐 Backend & Sicurezza (PHP/MySQL)
 
